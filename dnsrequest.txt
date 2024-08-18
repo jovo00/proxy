@@ -1,0 +1,1 @@
+http://192.168.178.94:3333/dns/update?username=<username>&password=<pass>&domain=<domain>&ip=<ipaddr>&ip6=<ip6addr>

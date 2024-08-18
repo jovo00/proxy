@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"proxy/balancer"
@@ -15,6 +16,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/models"
@@ -129,6 +131,63 @@ func main() {
 			Balancer:       customBalancer,
 			ModifyResponse: func(res *http.Response) error { return ModifyResponse(res, customBalancer, adminHost) },
 		}))
+
+		e.Router.GET("/dns/update", func(c echo.Context) error {
+			user := c.QueryParam("username")
+			password := c.QueryParam("password")
+			domain := c.QueryParam("domain")
+			ip := c.QueryParam("ip")
+			ip6 := c.QueryParam("ip6")
+
+			if user == "" || password == "" || domain == "" || (ip == "" && ip6 == "") {
+				return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request"})
+			}
+
+			record, err := app.Dao().FindFirstRecordByFilter(
+				"dns", "username = {:user} && password = {:password} && domain = {:domain}",
+				dbx.Params{"user": user, "password": password, "domain": domain},
+			)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request"})
+			}
+
+			records, err := app.Dao().FindRecordsByFilter("proxies", "dns = {:dns}", "id", 1000, 0, dbx.Params{"dns": record.Id})
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request"})
+			}
+
+			for _, record := range records {
+				currentTarget := record.GetString("target")
+				port := 0
+
+				// check if the target has a port
+				_, portStr, err := net.SplitHostPort(currentTarget)
+				if err == nil {
+					port, _ = strconv.Atoi(portStr)
+				}
+
+				if record.GetBool("dns_ipv6") && ip6 != "" {
+					if port > 0 {
+						record.Set("target", "["+ip6+"]:"+strconv.Itoa(port))
+					} else {
+						record.Set("target", "["+ip6+"]")
+					}
+				} else if ip != "" {
+					if port > 0 {
+						record.Set("target", ip+":"+strconv.Itoa(port))
+					} else {
+						record.Set("target", ip)
+					}
+				}
+
+				if err := app.Dao().SaveRecord(record); err != nil {
+					return err
+				}
+			}
+
+			return c.JSON(http.StatusOK, map[string]string{"message": "Success"})
+		} /* optional middlewares */)
+
 		return nil
 	})
 

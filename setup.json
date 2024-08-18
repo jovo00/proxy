@@ -39,7 +39,7 @@
     "indexes": [],
     "listRule": "id = @request.auth.id",
     "viewRule": "id = @request.auth.id",
-    "createRule": "",
+    "createRule": null,
     "updateRule": "id = @request.auth.id",
     "deleteRule": "id = @request.auth.id",
     "options": {
@@ -53,6 +53,63 @@
       "onlyVerified": false,
       "requireEmail": false
     }
+  },
+  {
+    "id": "65rfxu2zbt1aolc",
+    "name": "dns",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "system": false,
+        "id": "nhnttki4",
+        "name": "username",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "system": false,
+        "id": "8ywsno29",
+        "name": "password",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "system": false,
+        "id": "cg1bzhoy",
+        "name": "domain",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
   },
   {
     "id": "nbmnzy1s7jrc2po",
@@ -129,6 +186,32 @@
           "maxSize": 5242880,
           "protected": false
         }
+      },
+      {
+        "system": false,
+        "id": "tlycwgan",
+        "name": "dns",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "collectionId": "65rfxu2zbt1aolc",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": null
+        }
+      },
+      {
+        "system": false,
+        "id": "l2qdranr",
+        "name": "dns_ipv6",
+        "type": "bool",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {}
       }
     ],
     "indexes": [],
