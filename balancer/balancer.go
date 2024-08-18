@@ -81,6 +81,10 @@ func (cb *CustomBalancer) Next(c echo.Context) (*middleware.ProxyTarget, error) 
 		scheme = "https"
 	}
 
+	if !record.GetBool("https") {
+		scheme = "http"
+	}
+
 	target := record.GetString("target")
 	if cb.IsRecursive(target) {
 		return nil, echo.NewHTTPError(500, "Recursive target")
