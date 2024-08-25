@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"compress/gzip"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -23,6 +24,7 @@ import (
 )
 
 func Skipper(c echo.Context, adminHost string) bool {
+	fmt.Println(c.Request().Host)
 	return c.Request().Host == adminHost
 }
 
