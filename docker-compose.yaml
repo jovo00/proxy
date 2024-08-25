@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  myapp:
+  proxy:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,3 +9,7 @@ services:
     container_name: pbproxy
     ports:
       - "8090:8090"
+    environment:
+      - HOST=proxy.cloud.motionminds.de
+    volumes:
+      - /pb_data:/root/pb_data
