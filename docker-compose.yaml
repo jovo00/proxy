@@ -10,6 +10,6 @@ services:
     ports:
       - "8090:8090"
     environment:
-      - HOST=proxy.cloud.motionminds.de:8090
+      - HOST=host.docker.internal:8090
     volumes:
       - /pb_data:/root/pb_data
